@@ -1,6 +1,8 @@
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using System.Xml.Linq;
+using System;
 
 namespace TestProject1
 {
@@ -30,9 +32,24 @@ namespace TestProject1
             driver.FindElement(By.ClassName("dx-button-text")).Click();
             driver.FindElement(By.ClassName("dx-texteditor-input")).SendKeys("51231917345" + Keys.Enter);
             Thread.Sleep(2000);
-            driver.FindElement(By.PartialLinkText(" Далее ")).Click();
-            /*var clickCallcenter = driver.FindElement(callcenterButton);
-            clickCallcenter.Click();*/
+            driver.FindElement(By.XPath("//div[@test-id=\"select-button\"]")).Click();
+            driver.FindElement(By.XPath("//input[@test-id=\"surname\"]")).SendKeys("Иванов");
+            driver.FindElement(By.XPath("//input[@test-id=\"firstName\"]")).SendKeys("Иван");
+            driver.FindElement(By.XPath("//input[@test-id=\"middleName\"]")).SendKeys("Иванович");
+            /*WebElement cardNum = (WebElement)driver.FindElement(By.XPath("//input[@test-id=\"card-number\"]"));
+            cardNum.Clear();
+            var myString = "9620812001307270";
+            for (int i = 0; i < myString.Length; i++)
+            {
+                cardNum.SendKeys(myString[i].ToString());
+            };
+            cardNum.SendKeys("9620812001307270");*/
+            driver.FindElement(By.XPath("//div[@class=\"dx-dropdowneditor-icon\"]")).Click();
+            driver.FindElement(By.XPath("//div[@class=\"dx-item-content dx-list-item-content\"]")).Click();
+            WebElement character = (WebElement)driver.FindElement(By.XPath("//div[@test-id=\"tone-select\"]"));
+            character.Click();
+            driver.FindElement(By.XPath("//div[@class=\"dx-item-content dx-list-item-content\"]")).Click();
+            IWebElement element = driver.FindElement(By.CssSelector("[style*='line-height: 20px;'][style*='font-size: 15.4px;']"));
             Thread.Sleep(2000);
 
 
