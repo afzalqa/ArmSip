@@ -24,15 +24,21 @@ namespace TestProject1
         [Test] // сам тест
         public void Test1()
         {
-            driver.FindElement(By.Name("login")).SendKeys("admin");
+            IWebElement login = driver.FindElement(By.Name("login"));
+                login.SendKeys("admin");
             Thread.Sleep(2000);
-            driver.FindElement(By.Name("password")).SendKeys("asdf1234" + Keys.Enter);
+            IWebElement password = driver.FindElement(By.Name("password"));
+                password.SendKeys("asdf1234" + Keys.Enter);
             Thread.Sleep(2000);
-            driver.FindElement(By.PartialLinkText("Колл-центр")).SendKeys("asdf1234" + Keys.Enter);
-            driver.FindElement(By.ClassName("dx-button-text")).Click();
-            driver.FindElement(By.ClassName("dx-texteditor-input")).SendKeys("51231917345" + Keys.Enter);
+            IWebElement callCenter = driver.FindElement(By.PartialLinkText("Колл-центр"));
+                callCenter.SendKeys("asdf1234" + Keys.Enter);
+            IWebElement callClick = driver.FindElement(By.ClassName("dx-button-text"));
+                callClick.Click();
+            IWebElement inputCardNum = driver.FindElement(By.ClassName("dx-texteditor-input"));
+                inputCardNum.SendKeys("51231917345" + Keys.Enter);
             Thread.Sleep(2000);
-            driver.FindElement(By.XPath("//div[@test-id=\"select-button\"]")).Click();
+            IWebElement continueButton = driver.FindElement(By.XPath("//div[@test-id=\"select-button\"]"));
+                continueButton.Click();
             driver.FindElement(By.XPath("//input[@test-id=\"surname\"]")).SendKeys("Иванов");
             driver.FindElement(By.XPath("//input[@test-id=\"firstName\"]")).SendKeys("Иван");
             driver.FindElement(By.XPath("//input[@test-id=\"middleName\"]")).SendKeys("Иванович");
@@ -46,12 +52,16 @@ namespace TestProject1
             cardNum.SendKeys("9620812001307270");*/
             driver.FindElement(By.XPath("//div[@class=\"dx-dropdowneditor-icon\"]")).Click();
             driver.FindElement(By.XPath("//div[@class=\"dx-item-content dx-list-item-content\"]")).Click();
-            WebElement character = (WebElement)driver.FindElement(By.XPath("//div[@test-id=\"tone-select\"]"));
-            character.Click();
-            driver.FindElement(By.XPath("//div[@class=\"dx-item-content dx-list-item-content\"]")).Click();
-            IWebElement element = driver.FindElement(By.CssSelector("[style*='line-height: 20px;'][style*='font-size: 15.4px;']"));
-            Thread.Sleep(2000);
+            IWebElement characterDropDownList = driver.FindElement(By.XPath("//div[@test-id='tone-select']"));
+            characterDropDownList.Click();
+            IWebElement characterClick = driver.FindElement(By.XPath("//div[@class='dx-item-content dx-list-item-content' and text()='Негативный']"));
+            characterClick.Click();
+            IWebElement inputQuery = driver.FindElement(By.XPath("//textarea[@test-id='request-query']"));
+            inputQuery.Click();
+            inputQuery.SendKeys("Что у вас тут происходит?!");
 
+            IWebElement sendButton = driver.FindElement(By.XPath("//div[@test-id='send-button']"));
+            sendButton.Click();
 
             Assert.IsTrue(driver.FindElement(By.Id("message")).Text.Equals("LambdaTest rules"), "The expected message was not displayed.");
         }
