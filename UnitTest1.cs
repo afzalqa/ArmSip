@@ -3,10 +3,46 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using System.Xml.Linq;
 using System; // это директива using, которая сообщаем компилятору, что мы хотим использовать пространство имен System, которое содержит основные классы и функции в С#
+using System.Text; // через using добавляем пространсво System.Text, который содержит класс StringBuilder. Этот класс нужен для генерации логина
 using OpenQA.Selenium.DevTools.V108.ServiceWorker;
+using System.Net.Mail;
 
 namespace TestProject1
 {
+    class LoginGenerator // определяем класс LoginGenerator
+    {
+        private static readonly Random random = new Random(); // создаем статическое поле random, которое используется для генерации случайных значений
+        // pravte означает, что поле не может быть использовано за пределами класса LoginGenerator
+        // readonly - означает, что его значение может быть использовано один раз и не может быть изменено после этого
+
+        public static string GenerateLogin(int length) // метод GenerateLogin для генерации логина, принимает параметр length, который определяет длину логина
+        {
+            const string chars = "abcdefghijklmnopqrstuvwxyz";// создаем константу chars, который содержит все латинские буквы, используем эту строку для генерации
+            var builder = new StringBuilder(length); // создаем экземпляр класса StringBuilder, который используем для построения строки логина
+            // передаем параметр length в конструктор, который указывает начальную емкость StringBuilder. Это позволяет заранее зарезервировать достаточное кол-во памяти для построения строки
+            for (int i = 0; i < length; i++) // создаем цикл for, который будет выполняться length раз
+            {
+                builder.Append(chars[random.Next(chars.Length)]); // генерируем случайнную букву логина. random.Next(chars.Length) возвращает случайное число от 0 до длины строки chars
+                // это число затем используется для получения буквы их строки chars
+            }
+            return builder.ToString(); // после того, как цикл завершен, возвращаем строку логина, которую мы построили с помощью StringBuilder
+        }
+    }
+        
+    class Program
+    {
+        public static string GenerateRandomEmail()
+        {
+            var random = new Random();
+
+            // генерируем случайное имя по шаблону "user_{случайное число}@mail.ru"
+            string username = "user_" + random.Next(1000, 9999);
+            string domain = "mail.ru";
+
+            // собираем email из имени пользователя и домена
+            return username + "@" + domain;
+        }
+    }
 
     public class SnilsGenerator // определение класса SnilsGenerator, который будет генерировать СНИЛС
     {
@@ -43,6 +79,7 @@ namespace TestProject1
             return $"{snilsArray[0]}{snilsArray[1]}{snilsArray[2]}-{snilsArray[3]}{snilsArray[4]}{snilsArray[5]}-{snilsArray[6]}{snilsArray[7]}{snilsArray[8]} {checkDigit:D2}";
         }
     }
+
     public class Tests
     {
         private IWebDriver driver; // объявляем переменную driver
@@ -98,8 +135,9 @@ namespace TestProject1
         [Test]
         public void CreateUser() 
         {
-            IWebElement login = driver.FindElement(By.Name("login"));
-            login.SendKeys("admin");
+
+            IWebElement Authlogin = driver.FindElement(By.Name("login"));
+            Authlogin.SendKeys("admin");
             Thread.Sleep(2000);
             IWebElement password = driver.FindElement(By.Name("password"));
             password.SendKeys("asdf1234" + Keys.Enter);
@@ -107,9 +145,14 @@ namespace TestProject1
             IWebElement createUser = driver.FindElement(By.XPath("//div[@test-id=\"add-user-button\"]"));
                 createUser.Click();
             IWebElement inputLogin = driver.FindElement(By.XPath("//input[@test-id=\"login\"]"));
-            inputLogin.SendKeys("ThisIsLogin");
+            string generateLogin = LoginGenerator.GenerateLogin(8); // генерируем логин длиной 8 символов
+            inputLogin.SendKeys(generateLogin);// вызываем метод SendKeys и передаем ему сгенерированный логин, исплоьзуя метод GenerateLogin класса LoginGenerator
+
+            Program program = new Program();
+            string email = Program.GenerateRandomEmail();
             IWebElement inputEmail = driver.FindElement(By.XPath("//input[@test-id=\"e-mail\"]"));
-            inputEmail.SendKeys("test@gmail.ru");
+            inputEmail.SendKeys(email);
+
             IWebElement inputSurname = driver.FindElement(By.XPath("//input[@test-id=\"surname\"]"));
             inputSurname.SendKeys("Хусаин");
             Thread.Sleep(2000);
@@ -134,8 +177,13 @@ namespace TestProject1
 
         }
 
+        private string GenerateRandomEmail()
+        {
+            throw new NotImplementedException();
+        }
+
         [Test] // сам тест
-        public void CreateCallCentAppeal()
+        public void CreateCallCentrAppeal()
         {
             SnilsGenerator snilsGenerator = new SnilsGenerator(); // создаем новый экземпляр класса 'SnilsGenerator' и генерируем новый СНИЛС
             string snils = snilsGenerator.GenerateSnils(); // сохраняем сгенерированный СНИЛС в переменную snils
